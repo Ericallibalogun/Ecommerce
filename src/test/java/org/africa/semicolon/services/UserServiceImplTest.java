@@ -1,10 +1,9 @@
-package org.africa.semicolon;
+package org.africa.semicolon.services;
 
 import org.africa.semicolon.data.models.User;
 import org.africa.semicolon.data.repositories.UserRepo;
 import org.africa.semicolon.dtos.requests.RegisterUserRequest;
 import org.africa.semicolon.dtos.resposes.RegisterUserResponse;
-import org.africa.semicolon.services.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -14,7 +13,7 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class UserServicesTest {
+public class UserServiceImplTest {
 
     @Mock
     private UserRepo userRepo;
@@ -45,7 +44,7 @@ public class UserServicesTest {
         when(userRepo.save(any(User.class))).thenReturn(user);
         RegisterUserResponse response = userService.register(request);
         assertNotNull(response);
-        assertEquals("Registered successfully...Welcome Eric allibalogun", response.getName());
+        assertEquals("Registered successfully...Welcome Eric allibalogun", response.getMessage());
 
 
         verify(userRepo, times(1)).save(any(User.class));
