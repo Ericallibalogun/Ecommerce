@@ -1,27 +1,140 @@
 @startuml
-'https://plantuml.com/class-diagram
 
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
+package "Model Layer" {
 
-List <|-- AbstractList
-Collection <|-- AbstractCollection
+    class Product {
+        - id: String
+        - name: String
+        - description: String
+        - price: double
+        - categoryId: String
+        - quantity: int
+        - imageUrl: String
+    }
 
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
+    class Category {
+        - id: String
+        - name: String
+        - description: String
+    }
 
-class ArrayList {
-Object[] elementData
-size()
+    class User {
+        - id: String
+        - name: String
+        - email: String
+        - password: String
+        - role: String
+        - addresses: List<Address>
+    }
+
+    class Address {
+        - street: String
+        - city: String
+        - state: String
+        - postalCode: String
+        - country: String
+    }
+
+    class Order {
+        - id: String
+        - userId: String
+        - items: List<OrderItem>
+        - totalAmount: double
+        - status: String
+        - orderDate: LocalDateTime
+        - shippingAddress: Address
+    }
+
+    class OrderItem {
+        - productId: String
+        - productName: String
+        - price: double
+        - quantity: int
+    }
+
+    ' Relationships
+    Product --> Category : belongs to
+    User "1" *-- "0..*" Address
+    Order "1" --> "1" User : placed by
+    Order "1" *-- "1..*" OrderItem
+    Order --> Address : ships to
 }
 
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
+package "Repository Layer" {
+
+    interface ProductRepository {
+        +findByCategory(String): List<Product>
+        +save(Product): Product
+        +findById(String): Optional<Product>
+        +deleteById(String): void
+    }
+
+    interface UserRepository {
+        +findByEmail(String): Optional<User>
+        +save(User): User
+        +findById(String): Optional<User>
+        +deleteById(String): void
+    }
+
+    interface OrderRepository {
+        +findByUserId(String): List<Order>
+        +save(Order): Order
+        +findById(String): Optional<Order>
+        +deleteById(String): void
+    }
+
+    interface CategoryRepository {
+        +findByName(String): Category
+        +save(Category): Category
+        +findById(String): Optional<Category>
+        +deleteById(String): void
+    }
+
+    ' Relationships
+    ProductRepository --> Product
+    UserRepository --> User
+    OrderRepository --> Order
+    CategoryRepository --> Category
 }
+
+package "Service Layer" {
+
+    interface ProductService {
+        +createProduct(ProductRequest): ProductResponse
+        +getProductById(String): ProductResponse
+        +getAllProducts(): List<ProductResponse>
+        +getProductsByCategory(String): List<ProductResponse>
+        +updateProduct(String, ProductRequest): ProductResponse
+        +deleteProduct(String): void
+    }
+
+    interface UserService {
+        +registerUser(UserRequest): UserResponse
+        +getUserById(String): UserResponse
+        +getAllUsers(): List<UserResponse>
+        +deleteUser(String): void
+    }
+
+    interface OrderService {
+        +placeOrder(OrderRequest): OrderResponse
+        +getOrdersByUser(String): List<OrderResponse>
+        +getOrderById(String): OrderResponse
+        +cancelOrder(String): void
+    }
+
+    interface CategoryService {
+        +createCategory(CategoryRequest): CategoryResponse
+        +getAllCategories(): List<CategoryResponse>
+        +getCategoryById(String): CategoryResponse
+        +deleteCategory(String): void
+    }
+
+    ' Relationships (optional)
+    ProductService --> ProductRepository
+    UserService --> UserRepository
+    OrderService --> OrderRepository
+    CategoryService --> CategoryRepository
+}
+
 
 @enduml

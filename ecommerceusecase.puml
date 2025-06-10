@@ -1,22 +1,26 @@
 @startuml
-'https://plantuml.com/use-case-diagram
+left to right direction
+actor Customer
+actor Admin
 
-:Main Admin: as Admin
-(Use the application) as (Use)
+rectangle "Ecommerce System" {
+  ' Customer Use Cases
+  Customer --> (Register)
+  Customer --> (Login)
+  Customer --> (Browse Products)
+  Customer --> (View Product Details)
+  Customer --> (Filter by Category)
+  Customer --> (Add to Cart)
+  Customer --> (View Cart)
+  Customer --> (Remove from Cart)
+  Customer --> (Checkout)
+  Customer --> (View Order History)
 
-User -> (Start)
-User --> (Use)
-
-Admin ---> (Use)
-
-note right of Admin : This is an example.
-
-note right of (Use)
-A note can also
-be on several lines
-end note
-
-note "This note is connected\nto several objects." as N2
-(Start) .. N2
-N2 .. (Use)
+  ' Admin Use Cases
+  Admin --> (Login)
+  Admin --> (Add Product)
+  Admin --> (Update Product)
+  Admin --> (Delete Product)
+  Admin --> (Add Category)
+}
 @enduml

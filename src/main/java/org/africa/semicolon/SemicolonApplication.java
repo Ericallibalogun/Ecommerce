@@ -8,12 +8,7 @@ import org.springframework.context.ApplicationContext;
 public class SemicolonApplication {
 
     public static void main(String[] args) {
-        ApplicationContext context = SpringApplication.run(SemicolonApplication.class, args);
-
-        var orderService = context.getBean("orderService", OrderService.class);
-        orderService.setPaymentService(new PaypalPaymentService());
-        orderService.placeOrder();
+        SpringApplication.run(SemicolonApplication.class, args);
 
     }
-
 }
