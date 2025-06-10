@@ -21,8 +21,12 @@ public class UserServiceImpl implements UserService {
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setPassword(request.getPassword());
+
         userRepo.save(user);
-        response.setMessage("Registered successfully.. Welcome"+ response.getName());
+
+        response.setName(user.getName());
+        response.setMessage("Registered successfully.. Welcome"+ user.getName());
+
         return response;
     }
 }
