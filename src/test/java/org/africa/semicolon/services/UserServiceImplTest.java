@@ -1,14 +1,19 @@
 package org.africa.semicolon.services;
 
+import org.africa.semicolon.data.models.Role;
 import org.africa.semicolon.data.models.User;
 import org.africa.semicolon.data.repositories.UserRepo;
 import org.africa.semicolon.dtos.requests.RegisterUserRequest;
+import org.africa.semicolon.dtos.requests.UserLoginRequest;
 import org.africa.semicolon.dtos.resposes.RegisterUserResponse;
+import org.africa.semicolon.dtos.resposes.UserLoginResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -46,8 +51,33 @@ public class UserServiceImplTest {
         assertNotNull(response);
         assertEquals("Registered successfully...Welcome Eric allibalogun", response.getMessage());
 
-
         verify(userRepo, times(1)).save(any(User.class));
     }
+
+    @Test
+    public void testUserCanLogin(){
+        UserLoginRequest request = new  UserLoginRequest();
+        request.setEmail("allieric28@gmail.com");
+        request.setPassword("123233");
+
+        User user = new User();
+        user.setName("Eric alli");
+        user.setEmail("allieric28gmail.com");
+        user.setPassword("123233");
+        user.setPhone("07027242523");
+        user.setRole(Role.CUSTOMER);
+
+        when(userRepo.findByEmail("allieric28gmail.com")).thenReturn(Optional.of(user));
+
+        UserLoginResponse response = userService.login(request);
+
+        assertNotNull(response);
+        assertEquals("Login successful. Welcome Eric alli!",response.getMessage());
+        assertEquals("CUSTOMER",response.getRole());
+
+        verify(userRepo, times(1)).findByEmail("allieric28gmail.com");
+
+    }
+
 
 }

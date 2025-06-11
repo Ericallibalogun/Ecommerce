@@ -36,15 +36,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserLoginResponse login(UserLoginRequest request) {
+        UserLoginResponse response = new UserLoginResponse();
         User user = userRepo.findByEmail(request.getEmail())
                 .orElseThrow(() -> new EmailNotfoundException("Invalid email or password"));
         if (!user.getPassword().equals(request.getPassword())) {
             throw new InvalidPasswordException("Invalid email or email");
         }
-        return UserLoginResponse.builder()
-                .message("Welcome back, " + user.getName())
-                .userId(user.getId())
-                .role(user.getRole().name())
-                .build();
+        response.setMessage("Login successful. Welcome " + user.getName() + "!");
+        response.setUserId(user.getId());
+        response.setRole(user.getRole().name());
+
+        return response;
     }
 }
