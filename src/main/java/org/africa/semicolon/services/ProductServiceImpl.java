@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.africa.semicolon.utils.Mapper.mapProductToResponse;
+import static org.africa.semicolon.utils.Mapper.mapRequestToProductResponse;
 
 @Service
 public class ProductServiceImpl implements ProductService {
@@ -34,7 +35,7 @@ public class ProductServiceImpl implements ProductService {
         Product saved = productRepo.save(product);
         Category category = categoryRepo.findById(product.getCategoryId()).orElseThrow(()-> new CategoryNotFoundException("Category not found"));
 
-        return mapProductToResponse(product,category);
+        return mapRequestToProductResponse(product,category);
     }
 
     @Override
@@ -75,11 +76,23 @@ public class ProductServiceImpl implements ProductService {
     public DeleteProductResponse deleteProduct(String productId) {
         Product product = productRepo.findById(productId)
                 .orElseThrow(()-> new ProductNotFoundException("Product not found"));
-        productRepo.delete(product);
+        productRepo.deleteById(productId);
 
         DeleteProductResponse response = new DeleteProductResponse();
         response.setMessage("Product deleted successfully");
         return response;
+    }
+
+    @Override
+    public List<AddProductResponse> getProductsByCategory(String categoryId) {
+        Category category = categoryRepo.findById(categoryId)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found"));
+
+        List<Product> products = productRepo.findAllByCategoryId(categoryId);
+
+        return products.stream()
+                .map(product -> Mapper.mapProductToAddProductResponse(product, category.getName()))
+                .collect(Collectors.toList());
     }
 
 

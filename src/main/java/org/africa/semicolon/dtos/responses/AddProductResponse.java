@@ -13,5 +13,6 @@ public class AddProductResponse {
     private int quantity;
     private String categoryId;
     private String categoryName;
+    private String imageUrl;
 
 }

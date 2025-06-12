@@ -161,5 +161,20 @@ public class UserServiceImplTest {
         verify(categoryRepo).findById("cat123");
     }
 
+    @Test
+    public void testDeleteProductWhenExists() {
+        String productId = "21";
+        Product product = new Product();
+        product.setId(productId);
+        product.setName("Old Laptop");
+
+        when(productRepo.findById(productId)).thenReturn(Optional.of(product));
+
+        productService.deleteProduct(productId);
+
+        verify(productRepo, times(1)).findById("21");
+        verify(productRepo, times(1)).deleteById("21");
+    }
+
 
 }

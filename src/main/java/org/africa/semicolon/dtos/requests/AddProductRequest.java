@@ -12,6 +12,7 @@ public class AddProductRequest {
     private BigDecimal price;
     private int quantityAvailable;
     private String categoryId;
+    private String imageUrl;
 
 
 }

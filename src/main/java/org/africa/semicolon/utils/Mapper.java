@@ -35,6 +35,7 @@ public class Mapper {
         product.setPrice(request.getPrice());
         product.setQuantity(request.getQuantityAvailable());
         product.setCategoryId(request.getCategoryId());
+        product.setImageUrl(request.getImageUrl());
         return product;
     }
     public static AddProductResponse mapRequestToProductResponse(Product saved,Category category){
@@ -44,6 +45,7 @@ public class Mapper {
         response.setName(saved.getName());
         response.setDescription(saved.getDescription());
         response.setPrice(saved.getPrice());
+        response.setImageUrl(saved.getImageUrl());
         response.setCategoryName(category.getName());
         return response;
     }
@@ -87,6 +89,19 @@ public class Mapper {
         response.setPrice(product.getPrice());
         response.setDescription(product.getDescription());
         response.setCategoryName(category.getName());
+        return response;
+    }
+
+    public static AddProductResponse mapProductToAddProductResponse(Product product, String categoryName) {
+        AddProductResponse response = new AddProductResponse();
+        response.setProductId(product.getId());
+        response.setName(product.getName());
+        response.setDescription(product.getDescription());
+        response.setPrice(product.getPrice());
+        response.setQuantity(product.getQuantity());
+        response.setImageUrl(product.getImageUrl());
+        response.setCategoryName(categoryName);
+
         return response;
     }
 }

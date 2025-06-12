@@ -1,13 +1,13 @@
 package org.africa.semicolon.data.models;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,14 +15,15 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Order {
     @Id
     private String Id;
+    private String productId;
     private String userId;
+    private int quantity;
     private List<OrderItem> items;
-    private double totalAmount;
-    private String status;
+    private BigDecimal totalAmount;
+    private Status status;
     private LocalDateTime orderDate;
     @DBRef
     private Address shippingAddress;

@@ -1,5 +1,6 @@
 package org.africa.semicolon.services;
 
+import org.africa.semicolon.data.models.Product;
 import org.africa.semicolon.dtos.requests.AddProductRequest;
 import org.africa.semicolon.dtos.requests.DeleteProductRequest;
 import org.africa.semicolon.dtos.requests.UpdateProductRequest;
@@ -15,4 +16,5 @@ public interface ProductService {
     List<AddProductResponse> listAllProducts();
     UpdateProductResponse updateProduct(UpdateProductRequest request);
     DeleteProductResponse deleteProduct( String productId);
+    List<AddProductResponse> getProductsByCategory(String categoryId);
 }

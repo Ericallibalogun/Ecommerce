@@ -1,7 +1,6 @@
 package org.africa.semicolon.data.models;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -13,7 +12,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Document("collection = users")
 
 public class User {
@@ -23,7 +21,6 @@ public class User {
     private String email;
     private String phone;
     private String password;
-
     private Role role;
     private List<Address> addresses;
 
