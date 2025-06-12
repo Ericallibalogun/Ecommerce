@@ -1,12 +1,17 @@
 package org.africa.semicolon.services;
 
+import org.africa.semicolon.data.models.Category;
+import org.africa.semicolon.data.models.Product;
 import org.africa.semicolon.data.models.Role;
 import org.africa.semicolon.data.models.User;
+import org.africa.semicolon.data.repositories.ProductRepo;
 import org.africa.semicolon.data.repositories.UserRepo;
 import org.africa.semicolon.dtos.requests.RegisterUserRequest;
+import org.africa.semicolon.dtos.requests.UpdateProductRequest;
 import org.africa.semicolon.dtos.requests.UserLoginRequest;
-import org.africa.semicolon.dtos.resposes.RegisterUserResponse;
-import org.africa.semicolon.dtos.resposes.UserLoginResponse;
+import org.africa.semicolon.dtos.responses.RegisterUserResponse;
+import org.africa.semicolon.dtos.responses.UpdateProductResponse;
+import org.africa.semicolon.dtos.responses.UserLoginResponse;
 import org.africa.semicolon.exceptions.EmailNotfoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,8 +30,13 @@ public class UserServiceImplTest {
     @Mock
     private UserRepo userRepo;
 
+    @Mock
+    private ProductRepo productRepo;
+
     @InjectMocks
     private UserServiceImpl userService;
+    @InjectMocks
+    private ProductServiceImpl productService;
 
     @BeforeEach
     public void setUp(){
@@ -74,7 +85,7 @@ public class UserServiceImplTest {
 
         assertNotNull(response);
         assertEquals("Login successful. Welcome Eric alli!",response.getMessage());
-        assertEquals("CUSTOMER",response.getRole());
+        assertEquals(Role.CUSTOMER,response.getRole());
 
         verify(userRepo, times(1)).findByEmail("allieric28@gmail.com");
     }
@@ -87,6 +98,56 @@ public class UserServiceImplTest {
         when(userRepo.findByEmail("allieric71@gmail.com")).thenReturn(Optional.empty());
 
         assertThrows(EmailNotfoundException.class,() -> userService.login(request));
+    }
+    @Test
+    public void testAdminCanLogin(){
+        UserLoginRequest request = new  UserLoginRequest();
+        request.setEmail("admin@gmail.com");
+        request.setPassword("admin");
+
+        User user = new User();
+        user.setName("Eric alli");
+        user.setEmail("admin@gmail.com");
+        user.setPassword("admin");
+        user.setRole(Role.ADMIN);
+
+        when(userRepo.findByEmail("admin@gmail.com")).thenReturn(Optional.of(user));
+
+        UserLoginResponse response = userService.login(request);
+
+        assertNotNull(response);
+        assertEquals("Login successful. Welcome Eric alli!",response.getMessage());
+        assertEquals(Role.ADMIN,response.getRole());
+
+        verify(userRepo, times(1)).findByEmail("admin@gmail.com");
+    }
+
+    @Test
+    public void testProductCanBeUpdated(){
+        UpdateProductRequest request = new UpdateProductRequest();
+        request.setName("Updated Laptop");
+        request.setDescription("Updated description");
+        request.setPrice(BigDecimal.valueOf(950));
+        request.setCategoryId("category123");
+
+        Product existingProduct = new Product();
+        existingProduct.setName("Old Laptop");
+        existingProduct.setDescription("Old description");
+        existingProduct.setPrice(BigDecimal.valueOf(900));
+
+        Category category = new Category();
+        category.setName("Electronics");
+
+        when(productRepo.save(any(Product.class))).thenReturn(existingProduct );
+
+        UpdateProductResponse response = productService.updateProduct(request);
+
+        assertNotNull(response);
+        assertEquals("Updated Laptop", response.getName());
+        assertEquals("Electronics", response.getCategoryName());
+        assertEquals(BigDecimal.valueOf(950), response.getPrice());
+
+        verify(productRepo).save(any(Product.class));
     }
 
 

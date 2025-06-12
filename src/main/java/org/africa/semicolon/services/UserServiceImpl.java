@@ -4,10 +4,11 @@ import org.africa.semicolon.data.models.User;
 import org.africa.semicolon.data.repositories.UserRepo;
 import org.africa.semicolon.dtos.requests.RegisterUserRequest;
 import org.africa.semicolon.dtos.requests.UserLoginRequest;
-import org.africa.semicolon.dtos.resposes.RegisterUserResponse;
-import org.africa.semicolon.dtos.resposes.UserLoginResponse;
+import org.africa.semicolon.dtos.responses.RegisterUserResponse;
+import org.africa.semicolon.dtos.responses.UserLoginResponse;
 import org.africa.semicolon.exceptions.EmailNotfoundException;
 import org.africa.semicolon.exceptions.InvalidPasswordException;
+import org.africa.semicolon.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,19 +20,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public RegisterUserResponse register(RegisterUserRequest request) {
-        RegisterUserResponse response = new RegisterUserResponse();
-        User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
-        user.setPhone(request.getPhone());
-        user.setPassword(request.getPassword());
-
+        User user = Mapper.toUser(request);
         userRepo.save(user);
-
-        response.setName(user.getName());
-        response.setMessage("Registered successfully...Welcome "+ user.getName());
-
-        return response;
+        return Mapper.toRegisterResponse(user);
     }
 
     @Override
@@ -44,7 +35,7 @@ public class UserServiceImpl implements UserService {
         }
         response.setMessage("Login successful. Welcome " + user.getName() + "!");
         response.setUserId(user.getId());
-        response.setRole(user.getRole().name());
+        response.setRole(user.getRole());
 
         return response;
     }

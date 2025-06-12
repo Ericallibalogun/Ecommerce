@@ -2,8 +2,8 @@ package org.africa.semicolon.services;
 
 import org.africa.semicolon.dtos.requests.RegisterUserRequest;
 import org.africa.semicolon.dtos.requests.UserLoginRequest;
-import org.africa.semicolon.dtos.resposes.RegisterUserResponse;
-import org.africa.semicolon.dtos.resposes.UserLoginResponse;
+import org.africa.semicolon.dtos.responses.RegisterUserResponse;
+import org.africa.semicolon.dtos.responses.UserLoginResponse;
 
 public interface UserService {
 
