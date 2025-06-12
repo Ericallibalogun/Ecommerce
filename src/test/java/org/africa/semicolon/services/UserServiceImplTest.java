@@ -4,6 +4,7 @@ import org.africa.semicolon.data.models.Category;
 import org.africa.semicolon.data.models.Product;
 import org.africa.semicolon.data.models.Role;
 import org.africa.semicolon.data.models.User;
+import org.africa.semicolon.data.repositories.CategoryRepo;
 import org.africa.semicolon.data.repositories.ProductRepo;
 import org.africa.semicolon.data.repositories.UserRepo;
 import org.africa.semicolon.dtos.requests.RegisterUserRequest;
@@ -32,6 +33,9 @@ public class UserServiceImplTest {
 
     @Mock
     private ProductRepo productRepo;
+
+    @Mock
+    private CategoryRepo categoryRepo;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -125,20 +129,25 @@ public class UserServiceImplTest {
     @Test
     public void testProductCanBeUpdated(){
         UpdateProductRequest request = new UpdateProductRequest();
+        request.setProductId("11");
         request.setName("Updated Laptop");
         request.setDescription("Updated description");
         request.setPrice(BigDecimal.valueOf(950));
-        request.setCategoryId("category123");
+        request.setCategoryId("cat123");
 
         Product existingProduct = new Product();
+        existingProduct.setId("11");
         existingProduct.setName("Old Laptop");
         existingProduct.setDescription("Old description");
         existingProduct.setPrice(BigDecimal.valueOf(900));
 
         Category category = new Category();
+        category.setId("cat123");
         category.setName("Electronics");
 
-        when(productRepo.save(any(Product.class))).thenReturn(existingProduct );
+        when(productRepo.findById("11")).thenReturn(Optional.of(existingProduct));
+        when(productRepo.save(any(Product.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(categoryRepo.findById("cat123")).thenReturn(Optional.of(category));
 
         UpdateProductResponse response = productService.updateProduct(request);
 
@@ -147,7 +156,9 @@ public class UserServiceImplTest {
         assertEquals("Electronics", response.getCategoryName());
         assertEquals(BigDecimal.valueOf(950), response.getPrice());
 
+        verify(productRepo).findById("11");
         verify(productRepo).save(any(Product.class));
+        verify(categoryRepo).findById("cat123");
     }
 
 

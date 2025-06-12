@@ -5,8 +5,10 @@ import org.africa.semicolon.data.models.Product;
 import org.africa.semicolon.data.repositories.CategoryRepo;
 import org.africa.semicolon.data.repositories.ProductRepo;
 import org.africa.semicolon.dtos.requests.AddProductRequest;
+import org.africa.semicolon.dtos.requests.DeleteProductRequest;
 import org.africa.semicolon.dtos.requests.UpdateProductRequest;
 import org.africa.semicolon.dtos.responses.AddProductResponse;
+import org.africa.semicolon.dtos.responses.DeleteProductResponse;
 import org.africa.semicolon.dtos.responses.UpdateProductResponse;
 import org.africa.semicolon.exceptions.CategoryNotFoundException;
 import org.africa.semicolon.exceptions.ProductNotFoundException;
@@ -67,6 +69,17 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(()->new CategoryNotFoundException("Category not found"));
 
         return Mapper.toUpdateProductResponse(updatedProduct,category);
+    }
+
+    @Override
+    public DeleteProductResponse deleteProduct(String productId) {
+        Product product = productRepo.findById(productId)
+                .orElseThrow(()-> new ProductNotFoundException("Product not found"));
+        productRepo.delete(product);
+
+        DeleteProductResponse response = new DeleteProductResponse();
+        response.setMessage("Product deleted successfully");
+        return response;
     }
 
 
