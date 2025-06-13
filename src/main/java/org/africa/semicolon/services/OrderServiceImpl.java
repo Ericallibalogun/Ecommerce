@@ -45,7 +45,6 @@ public class OrderServiceImpl implements OrderService{
                         .orElseThrow(() -> new AddressNotFoundException("Shipping address not found"));
         BigDecimal totalAmount = product.getPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
 
-
         Order order = new Order();
         order.setUserId(user.getId());
         order.setProductId(product.getId());
@@ -60,7 +59,5 @@ public class OrderServiceImpl implements OrderService{
         product.setQuantity(product.getQuantity() - request.getQuantity());
         productRepo.save(product);
         return Mapper.mapToPlaceOrderResponse(savedOrder);
-
-
     }
 }
