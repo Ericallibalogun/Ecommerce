@@ -7,9 +7,11 @@ import org.africa.semicolon.data.models.User;
 import org.africa.semicolon.data.repositories.CategoryRepo;
 import org.africa.semicolon.data.repositories.ProductRepo;
 import org.africa.semicolon.data.repositories.UserRepo;
+import org.africa.semicolon.dtos.requests.AddProductRequest;
 import org.africa.semicolon.dtos.requests.RegisterUserRequest;
 import org.africa.semicolon.dtos.requests.UpdateProductRequest;
 import org.africa.semicolon.dtos.requests.UserLoginRequest;
+import org.africa.semicolon.dtos.responses.AddProductResponse;
 import org.africa.semicolon.dtos.responses.RegisterUserResponse;
 import org.africa.semicolon.dtos.responses.UpdateProductResponse;
 import org.africa.semicolon.dtos.responses.UserLoginResponse;
@@ -124,6 +126,32 @@ public class UserServiceImplTest {
         assertEquals(Role.ADMIN,response.getRole());
 
         verify(userRepo, times(1)).findByEmail("admin@gmail.com");
+    }
+    @Test
+    public void testThatProductCanBeAdded(){
+        AddProductRequest request = new AddProductRequest();
+        request.setName("led tv");
+        request.setImageUrl("image.jpg");
+        request.setPrice(BigDecimal.valueOf(250));
+        request.setQuantityAvailable(23);
+        request.setDescription("strong and durable");
+        request.setCategoryId("cat23");
+
+        Category category = new Category();
+        category.setId("cat23");
+        category.setName("Electronics");
+
+        when(productRepo.save(any(Product.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(categoryRepo.findById("cat23")).thenReturn(Optional.of(category));
+
+        AddProductResponse response = productService.addProduct(request);
+        assertNotNull(response);
+        assertEquals("Product added successfully",response.getMessage());
+        assertEquals("led tv",response.getName());
+        assertEquals("image.jpg",response.getImageUrl());
+
+        verify(productRepo, times(1)).save(any(Product.class));
+        verify(categoryRepo).findById("cat23");
     }
 
     @Test

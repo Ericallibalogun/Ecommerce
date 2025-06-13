@@ -9,20 +9,19 @@ import org.africa.semicolon.data.repositories.UserRepo;
 import org.africa.semicolon.dtos.requests.PlaceOrderRequest;
 import org.africa.semicolon.dtos.responses.PlaceOrderResponse;
 import org.africa.semicolon.exceptions.AddressNotFoundException;
-import org.africa.semicolon.exceptions.InsufficientStockException;
 import org.africa.semicolon.exceptions.ProductNotFoundException;
 import org.africa.semicolon.exceptions.UserNotFoundException;
-import org.africa.semicolon.utils.Mapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImpl implements OrderService{
+public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepo orderRepo;
     @Autowired
@@ -33,31 +32,53 @@ public class OrderServiceImpl implements OrderService{
     private AddressRepo addressRepo;
 
 
+
     @Override
     public PlaceOrderResponse placeOrder(PlaceOrderRequest request) {
         User user = userRepo.findById(request.getUserId())
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
-        Product product = productRepo.findById(request.getProductId())
-                .orElseThrow(() -> new ProductNotFoundException("Product not found"));
-        if(product.getQuantity() < request.getQuantity()) throw new InsufficientStockException("Not enough stock available");
 
-        Address shippingAddress = addressRepo.findById(request.getAddressId())
-                        .orElseThrow(() -> new AddressNotFoundException("Shipping address not found"));
-        BigDecimal totalAmount = product.getPrice().multiply(BigDecimal.valueOf(request.getQuantity()));
+        Address address = addressRepo.findById(request.getShippingAddressId())
+                .orElseThrow(() -> new AddressNotFoundException("Address not found"));
+
+        List<OrderItem> orderItems = new ArrayList<>();
+        BigDecimal totalAmount = BigDecimal.ZERO;
+
+        for (OrderItem itemRequest : request.getItems()) {
+            Product product = productRepo.findById(itemRequest.getProductId())
+                    .orElseThrow(() -> new ProductNotFoundException("Product not found"));
+
+            boolean availableQuantityIsInsufficient = product.getQuantity() < itemRequest.getQuantity();
+            if (availableQuantityIsInsufficient) throw new RuntimeException("Insufficient stock for " + product.getName());
+
+            OrderItem item = new OrderItem();
+            item.setProductId(product.getId());
+            item.setProductName(product.getName());
+            item.setQuantity(itemRequest.getQuantity());
+            item.setPrice(product.getPrice());
+            item.setPrice(product.getPrice().multiply(BigDecimal.valueOf(itemRequest.getQuantity())));
+            orderItems.add(item);
+
+            totalAmount = totalAmount.add(item.getTotalPrice());
+        }
 
         Order order = new Order();
         order.setUserId(user.getId());
-        order.setProductId(product.getId());
-        order.setQuantity(request.getQuantity());
+        order.setItems(orderItems);
         order.setTotalAmount(totalAmount);
-        order.setShippingAddress(shippingAddress);
-        order.setOrderDate(LocalDateTime.now());
+        order.setShippingAddress(address);
         order.setStatus(Status.PENDING);
+        order.setOrderDate(LocalDateTime.now());
 
         Order savedOrder = orderRepo.save(order);
 
-        product.setQuantity(product.getQuantity() - request.getQuantity());
-        productRepo.save(product);
-        return Mapper.mapToPlaceOrderResponse(savedOrder);
+        PlaceOrderResponse response = new PlaceOrderResponse();
+        response.setOrderId(savedOrder.getId());
+        response.setMessage("Order placed successfully");
+        response.setTotalAmount(savedOrder.getTotalAmount());
+        response.setOrderDate(savedOrder.getOrderDate());
+        response.setStatus(savedOrder.getStatus());
+
+        return response;
     }
 }
