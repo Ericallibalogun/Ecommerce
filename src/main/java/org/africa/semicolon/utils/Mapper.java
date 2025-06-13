@@ -1,12 +1,15 @@
 package org.africa.semicolon.utils;
 
 import org.africa.semicolon.data.models.Category;
+import org.africa.semicolon.data.models.Order;
 import org.africa.semicolon.data.models.Product;
 import org.africa.semicolon.data.models.User;
 import org.africa.semicolon.dtos.requests.AddProductRequest;
+import org.africa.semicolon.dtos.requests.PlaceOrderRequest;
 import org.africa.semicolon.dtos.requests.RegisterUserRequest;
 import org.africa.semicolon.dtos.requests.UpdateProductRequest;
 import org.africa.semicolon.dtos.responses.AddProductResponse;
+import org.africa.semicolon.dtos.responses.PlaceOrderResponse;
 import org.africa.semicolon.dtos.responses.RegisterUserResponse;
 import org.africa.semicolon.dtos.responses.UpdateProductResponse;
 
@@ -103,5 +106,16 @@ public class Mapper {
         response.setCategoryName(categoryName);
 
         return response;
+    }
+    public static PlaceOrderResponse mapToPlaceOrderResponse(Order order){
+        PlaceOrderResponse response = new PlaceOrderResponse();
+        response.setOrderId(order.getId());
+        response.setTotalAmount(order.getTotalAmount());
+        response.setOrderDate(order.getOrderDate());
+        response.setStatus(order.getStatus());
+        response.setMessage("Order placed successfully");
+        return response;
+
+
     }
 }

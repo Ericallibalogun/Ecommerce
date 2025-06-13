@@ -7,4 +7,5 @@ public class PlaceOrderRequest {
     private String userId;
     private String productId;
     private int quantity;
+    private String addressId;
 }

@@ -1,6 +1,7 @@
 package org.africa.semicolon.dtos.responses;
 
 import lombok.Data;
+import org.africa.semicolon.data.models.Status;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,4 +11,5 @@ public class PlaceOrderResponse {
     private String message;
     private BigDecimal totalAmount;
     private LocalDateTime orderDate;
+    private Status status;
 }
