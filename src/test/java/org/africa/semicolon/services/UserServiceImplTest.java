@@ -1,20 +1,15 @@
 package org.africa.semicolon.services;
 
-import org.africa.semicolon.data.models.Category;
-import org.africa.semicolon.data.models.Product;
-import org.africa.semicolon.data.models.Role;
-import org.africa.semicolon.data.models.User;
+import org.africa.semicolon.data.models.*;
 import org.africa.semicolon.data.repositories.CategoryRepo;
+import org.africa.semicolon.data.repositories.OrderRepo;
 import org.africa.semicolon.data.repositories.ProductRepo;
 import org.africa.semicolon.data.repositories.UserRepo;
 import org.africa.semicolon.dtos.requests.AddProductRequest;
 import org.africa.semicolon.dtos.requests.RegisterUserRequest;
 import org.africa.semicolon.dtos.requests.UpdateProductRequest;
 import org.africa.semicolon.dtos.requests.UserLoginRequest;
-import org.africa.semicolon.dtos.responses.AddProductResponse;
-import org.africa.semicolon.dtos.responses.RegisterUserResponse;
-import org.africa.semicolon.dtos.responses.UpdateProductResponse;
-import org.africa.semicolon.dtos.responses.UserLoginResponse;
+import org.africa.semicolon.dtos.responses.*;
 import org.africa.semicolon.exceptions.EmailNotfoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,10 +36,15 @@ public class UserServiceImplTest {
     @Mock
     private CategoryRepo categoryRepo;
 
+    @Mock
+    private OrderRepo orderRepo;
+
     @InjectMocks
     private UserServiceImpl userService;
     @InjectMocks
     private ProductServiceImpl productService;
+    @InjectMocks
+    private OrderServiceImpl orderService;
 
     @BeforeEach
     public void setUp(){
@@ -204,5 +206,43 @@ public class UserServiceImplTest {
         verify(productRepo, times(1)).deleteById("21");
     }
 
+    @Test
+    public void testGetOrderById() {
+        OrderItem item1 = new OrderItem();
+        item1.setProductId("pro22");
+        item1.setProductName("Bag");
+        item1.setQuantity(2);
+        item1.setPrice(BigDecimal.valueOf(100));
+        item1.setTotalPrice(BigDecimal.valueOf(200));
+
+        List<OrderItem> items = List.of(item1);
+
+
+        Address address = new Address();
+        address.setStreet("123 Ajegunle St");
+        address.setCity("Lagos");
+
+        Order order = new Order();
+        order.setId("order123");
+        order.setUserId("user456");
+        order.setItems(items);
+        order.setTotalAmount(BigDecimal.valueOf(200));
+        order.setOrderDate(LocalDateTime.now());
+        order.setStatus(Status.PENDING);
+        order.setShippingAddress(address);
+
+        when(orderRepo.findById("order123")).thenReturn(Optional.of(order));
+
+        PlaceOrderResponse response = orderService.getOrderById("order123");
+
+        assertNotNull(response);
+        assertEquals("order123", response.getOrderId());
+        assertEquals("user456", response.getUserId());
+        assertEquals(1, response.getItems().size());
+        assertEquals("Bag", response.getItems().getFirst().getProductName());
+        assertEquals("123 Ajegunle St, Lagos", response.getShippingAddress());
+
+        verify(orderRepo, times(1)).findById("order123");
+    }
 
 }
