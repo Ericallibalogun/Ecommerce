@@ -15,7 +15,8 @@ public class PlaceOrderResponse {
     private String userId;
     private String customerName;
     private BigDecimal totalAmount;
-    private List<OrderItem> items;
+    private List<OrderItemResponse> items;
     private LocalDateTime orderDate;
     private Status status;
+    private String shippingAddress;
 }

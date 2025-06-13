@@ -7,8 +7,10 @@ import org.africa.semicolon.data.repositories.OrderRepo;
 import org.africa.semicolon.data.repositories.ProductRepo;
 import org.africa.semicolon.data.repositories.UserRepo;
 import org.africa.semicolon.dtos.requests.PlaceOrderRequest;
+import org.africa.semicolon.dtos.responses.OrderItemResponse;
 import org.africa.semicolon.dtos.responses.PlaceOrderResponse;
 import org.africa.semicolon.exceptions.AddressNotFoundException;
+import org.africa.semicolon.exceptions.OrderNotFoundException;
 import org.africa.semicolon.exceptions.ProductNotFoundException;
 import org.africa.semicolon.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
         BigDecimal totalAmount = BigDecimal.ZERO;
 
-        for (OrderItem itemRequest : request.getItems()) {
+        for (OrderItemResponse itemRequest : request.getItems()) {
             Product product = productRepo.findById(itemRequest.getProductId())
                     .orElseThrow(() -> new ProductNotFoundException("Product not found"));
 
@@ -80,5 +83,34 @@ public class OrderServiceImpl implements OrderService {
         response.setStatus(savedOrder.getStatus());
 
         return response;
+    }
+
+    @Override
+    public PlaceOrderResponse getOrderById(String orderId) {
+       Order order = orderRepo.findById(orderId)
+               .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+       PlaceOrderResponse response = new PlaceOrderResponse();
+       response.setOrderId(order.getId());
+       response.setUserId(order.getUserId());
+       response.setOrderDate(order.getOrderDate());
+       response.setStatus(order.getStatus());
+       response.setTotalAmount(order.getTotalAmount());
+
+       Address address = order.getShippingAddress();
+       response.setShippingAddress(address.getStreet() + ", " + address.getCity());
+
+       List<OrderItemResponse> itemResponses = order.getItems().stream()
+               .map(item ->{
+                   OrderItemResponse itemResponse = new OrderItemResponse();
+                   itemResponse.setProductId(item.getProductId());
+                   itemResponse.setProductName(item.getProductName());
+                   itemResponse.setQuantity(item.getQuantity());
+                   itemResponse.setUnitPrice(item.getPrice());
+                   itemResponse.setTotalPrice(item.getTotalPrice());
+                   return itemResponse;
+
+               }).collect(Collectors.toList());
+       response.setItems(itemResponses);
+       return response;
     }
 }
