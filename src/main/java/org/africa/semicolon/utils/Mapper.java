@@ -1,9 +1,6 @@
 package org.africa.semicolon.utils;
 
-import org.africa.semicolon.data.models.Category;
-import org.africa.semicolon.data.models.Order;
-import org.africa.semicolon.data.models.Product;
-import org.africa.semicolon.data.models.User;
+import org.africa.semicolon.data.models.*;
 import org.africa.semicolon.dtos.requests.AddProductRequest;
 import org.africa.semicolon.dtos.requests.PlaceOrderRequest;
 import org.africa.semicolon.dtos.requests.RegisterUserRequest;
@@ -22,6 +19,7 @@ public class Mapper {
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setPassword(request.getPassword());
+        user.setRole(Role.valueOf(Role.CUSTOMER.name()));
         return user;
 
     }

@@ -6,6 +6,7 @@ import org.africa.semicolon.data.repositories.CategoryRepo;
 import org.africa.semicolon.data.repositories.ProductRepo;
 import org.africa.semicolon.dtos.requests.AddProductRequest;
 import org.africa.semicolon.dtos.requests.DeleteProductRequest;
+import org.africa.semicolon.dtos.requests.ProductSearchRequest;
 import org.africa.semicolon.dtos.requests.UpdateProductRequest;
 import org.africa.semicolon.dtos.responses.AddProductResponse;
 import org.africa.semicolon.dtos.responses.DeleteProductResponse;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.africa.semicolon.utils.Mapper.mapProductToResponse;
 import static org.africa.semicolon.utils.Mapper.mapRequestToProductResponse;
@@ -93,6 +95,33 @@ public class ProductServiceImpl implements ProductService {
         return products.stream()
                 .map(product -> Mapper.mapProductToAddProductResponse(product, category.getName()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<AddProductResponse> searchAndFilterProducts(ProductSearchRequest request) {
+        List<Product> products = productRepo.findAll();
+        Stream<Product> filtered = products.stream();
+
+        boolean searchedKeywordIsNotEmpty = request.getKeyword() != null;
+        if(searchedKeywordIsNotEmpty) filtered = filtered.filter(product ->
+                product.getName().toLowerCase().contains(request.getKeyword().toLowerCase()) ||
+                product.getDescription().toLowerCase().contains(request.getKeyword().toLowerCase()));
+
+        boolean searchedCategoryIsNotEmpty = request.getCategoryId() != null;
+        if(searchedCategoryIsNotEmpty) filtered = filtered.filter(product ->
+                request.getCategoryId().equals(product.getCategoryId()));
+
+        boolean priceIsNotEmpty = request.getMinPrice() != null && request.getMaxPrice() != null;
+        if (priceIsNotEmpty) filtered = filtered.filter(product ->
+                    product.getPrice().compareTo(request.getMinPrice()) >= 0 &&
+                    product.getPrice().compareTo(request.getMaxPrice()) <= 0);
+
+        if (request.getMinQuantity() != null) filtered = filtered.filter(product -> product.getQuantity() >= request.getMinQuantity());
+
+        return filtered
+                .map(product -> Mapper.mapProductToAddProductResponse(product,""))
+                .collect(Collectors.toList());
+
     }
 
 

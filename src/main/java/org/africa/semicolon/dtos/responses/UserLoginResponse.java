@@ -7,5 +7,5 @@ import org.africa.semicolon.data.models.Role;
 public class UserLoginResponse {
     private String message;
     private String userId;
-    private Role role;
+    private String role;
 }

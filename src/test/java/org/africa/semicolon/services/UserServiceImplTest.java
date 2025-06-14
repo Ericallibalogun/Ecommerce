@@ -93,7 +93,7 @@ public class UserServiceImplTest {
 
         assertNotNull(response);
         assertEquals("Login successful. Welcome Eric alli!",response.getMessage());
-        assertEquals(Role.CUSTOMER,response.getRole());
+        assertEquals(Role.CUSTOMER.name(),response.getRole());
 
         verify(userRepo, times(1)).findByEmail("allieric28@gmail.com");
     }
@@ -125,7 +125,7 @@ public class UserServiceImplTest {
 
         assertNotNull(response);
         assertEquals("Login successful. Welcome Eric alli!",response.getMessage());
-        assertEquals(Role.ADMIN,response.getRole());
+        assertEquals(Role.ADMIN.name(),response.getRole());
 
         verify(userRepo, times(1)).findByEmail("admin@gmail.com");
     }
