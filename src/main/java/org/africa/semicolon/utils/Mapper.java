@@ -46,8 +46,10 @@ public class Mapper {
         response.setName(saved.getName());
         response.setDescription(saved.getDescription());
         response.setPrice(saved.getPrice());
+        response.setQuantity(saved.getQuantity());
         response.setImageUrl(saved.getImageUrl());
         response.setCategoryName(category.getName());
+
         return response;
     }
     public static AddProductResponse mapProductToResponse(Product product, Category category) {

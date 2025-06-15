@@ -4,11 +4,9 @@ import org.africa.semicolon.data.models.Category;
 import org.africa.semicolon.data.models.Product;
 import org.africa.semicolon.data.repositories.CategoryRepo;
 import org.africa.semicolon.data.repositories.ProductRepo;
-import org.africa.semicolon.dtos.requests.AddProductRequest;
-import org.africa.semicolon.dtos.requests.DeleteProductRequest;
-import org.africa.semicolon.dtos.requests.ProductSearchRequest;
-import org.africa.semicolon.dtos.requests.UpdateProductRequest;
+import org.africa.semicolon.dtos.requests.*;
 import org.africa.semicolon.dtos.responses.AddProductResponse;
+import org.africa.semicolon.dtos.responses.CreateCategoryResponse;
 import org.africa.semicolon.dtos.responses.DeleteProductResponse;
 import org.africa.semicolon.dtos.responses.UpdateProductResponse;
 import org.africa.semicolon.exceptions.CategoryNotFoundException;
@@ -121,6 +119,21 @@ public class ProductServiceImpl implements ProductService {
         return filtered
                 .map(product -> Mapper.mapProductToAddProductResponse(product,""))
                 .collect(Collectors.toList());
+
+    }
+
+    @Override
+    public CreateCategoryResponse createCategory(CreateCategoryRequest request) {
+        Category category = new Category();
+        category.setName(request.getName());
+
+        Category savedCategory = categoryRepo.save(category);
+        CreateCategoryResponse response = new CreateCategoryResponse();
+        response.setId(savedCategory.getId());
+        response.setName(savedCategory.getName());
+        response.setMessage("Category created successfully");
+
+        return response;
 
     }
 
