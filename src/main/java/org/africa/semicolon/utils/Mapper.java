@@ -2,7 +2,6 @@ package org.africa.semicolon.utils;
 
 import org.africa.semicolon.data.models.*;
 import org.africa.semicolon.dtos.requests.AddProductRequest;
-import org.africa.semicolon.dtos.requests.PlaceOrderRequest;
 import org.africa.semicolon.dtos.requests.RegisterUserRequest;
 import org.africa.semicolon.dtos.requests.UpdateProductRequest;
 import org.africa.semicolon.dtos.responses.AddProductResponse;
@@ -34,7 +33,7 @@ public class Mapper {
         product.setName(request.getName());
         product.setDescription(request.getDescription());
         product.setPrice(request.getPrice());
-        product.setQuantity(request.getQuantityAvailable());
+        product.setQuantity(request.getQuantity());
         product.setCategoryId(request.getCategoryId());
         product.setImageUrl(request.getImageUrl());
         return product;
@@ -73,6 +72,7 @@ public class Mapper {
         response.setName(product.getName());
         response.setPrice(product.getPrice());
         response.setDescription(product.getDescription());
+        response.setQuantity(product.getQuantity());
         response.setCategoryName(category.getName());
 
         return response;

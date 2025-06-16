@@ -135,7 +135,7 @@ public class UserServiceImplTest {
         request.setName("led tv");
         request.setImageUrl("image.jpg");
         request.setPrice(BigDecimal.valueOf(250));
-        request.setQuantityAvailable(23);
+        request.setQuantity(23);
         request.setDescription("strong and durable");
         request.setCategoryId("cat23");
 

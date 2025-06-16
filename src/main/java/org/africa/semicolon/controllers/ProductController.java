@@ -31,13 +31,12 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getProductById(@PathVariable String id) {
         AddProductResponse response = productService.getProductById(id);
-        return ResponseEntity.ok(new ApiResponse(true, response));
+        return new ResponseEntity<>(new ApiResponse(true, response), HttpStatus.OK);
     }
     @PutMapping("/update")
     public ResponseEntity<?> updateProduct(@RequestBody UpdateProductRequest request) {
         UpdateProductResponse response = productService.updateProduct(request);
-        return ResponseEntity.ok(new ApiResponse(true, response));
-    }
+        return new ResponseEntity<>(new ApiResponse(true, response), HttpStatus.OK);    }
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteProduct (@PathVariable String id){
         productService.deleteProduct(id);
