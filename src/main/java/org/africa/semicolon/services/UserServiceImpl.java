@@ -47,7 +47,6 @@ public class UserServiceImpl implements UserService {
         response.setMessage("Login successful. Welcome " + user.getName() + "!");
         response.setUserId(user.getId());
         response.setRole(user.getRole().name());
-
         return response;
     }
 }

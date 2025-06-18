@@ -8,5 +8,5 @@ public class RegisterUserResponse {
     private String id;
     private String name;
     private String message;
-    private Role role = Role.CUSTOMER;
+    private Role role;
 }

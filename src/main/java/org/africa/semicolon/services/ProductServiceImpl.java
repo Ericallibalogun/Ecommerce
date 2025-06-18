@@ -32,7 +32,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public AddProductResponse addProduct(AddProductRequest request) {
         Product product =  Mapper.mapRequestToProduct(request);
-        Product saved = productRepo.save(product);
+        productRepo.save(product);
         Category category = categoryRepo.findById(product.getCategoryId()).orElseThrow(()-> new CategoryNotFoundException("Category not found"));
 
         return mapRequestToProductResponse(product,category);
